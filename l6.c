@@ -2,11 +2,12 @@
 #include<SDL2/SDL_ttf.h>
 #include<SDL2/SDL_image.h>
 
-void wallDraw(SDL_Renderer* gRenderer, SDL_Rect wall1,int *wallExist, int *x, int *y,int *scoreNumber, int i)
+void wallDraw(SDL_Renderer* gRenderer,int *wallExist, int *x, int *y,int *scoreNumber, int i)
 {
   
   if (wallExist[i] == 0) return;
  
+ SDL_Rect wall1 = {400-(i*90),100,82,38};
 if ( ((*x == wall1.x || *x+1 == wall1.x)  &&  *y >= wall1.y && *y <= wall1.y+wall1.h)  || (*x == wall1.x + wall1.w &&  *y -100 >= wall1.y && *y -100 <= wall1.y+wall1.h)) {
     if(wallExist[i] !=0) (*scoreNumber)++; 
 
@@ -19,7 +20,7 @@ if ( ((*x == wall1.x || *x+1 == wall1.x)  &&  *y >= wall1.y && *y <= wall1.y+wal
      wallExist[i] = 0;
    }
 
- if (*wallExist) SDL_RenderDrawRect(gRenderer, &wall1);
+ if (wallExist[i]) SDL_RenderDrawRect(gRenderer, &wall1);
  
 }
 
@@ -86,7 +87,7 @@ int main(void) {
  SDL_Texture* barTexture = SDL_CreateTextureFromSurface(gRenderer,
 barSurface);
  SDL_SetRenderDrawColor(gRenderer,0,0,0,0xFF);
- SDL_Rect wall1 = {400,100,80,40};
+ //SDL_Rect wall1 = {400,100,82,38};
  SDL_RenderClear(gRenderer); 
  
  SDL_SetRenderDrawColor(gRenderer,0,0xFF,0xFF,0xFF);
@@ -94,7 +95,7 @@ barSurface);
  int x = 20,y=20;
  int polX = 0;int polY=0;
  int polBrick = 0;
- int wallExist[] = {1};
+ int wallExist[] = {1,1,1,1,1,1,1,1,1,1};
 
  SDL_Rect brickRect = {300,220,80,40};
  SDL_Rect pixelPos = {0,0,20,20};
@@ -109,7 +110,6 @@ barSurface);
       if(e.type == SDL_QUIT) {
            quit = 1;
       }
-
    }
  SDL_SetRenderDrawColor(gRenderer,0,80,10,10);
  SDL_RenderClear(gRenderer); 
@@ -117,8 +117,10 @@ barSurface);
  SDL_SetRenderDrawColor(gRenderer,0,0xFF,0xFF,0xFF);
  brickDraw(brickRect, &polBrick,gRenderer,&(brickRect.x),barTexture);
  pixelDraw(pixelPos,brickRect,gRenderer,&x,&y,&polX,&polY,dotTexture); 
-wallDraw( gRenderer, wall1, wallExist, &x, &y, &scoreNumber,0);
-
+ for (int i = 0; i<4;i++) 
+ {
+ wallDraw( gRenderer,wallExist, &x, &y, &scoreNumber,i);
+ }
  scoreDraw(scoreFont,gRenderer,scoreNumber);
  SDL_RenderPresent(gRenderer);
  SDL_Delay(5); 
