@@ -2,6 +2,27 @@
 #include<SDL2/SDL_ttf.h>
 #include<SDL2/SDL_image.h>
 
+void wallDraw(SDL_Renderer* gRenderer, SDL_Rect wall1,int *wallExist, int *x, int *y,int *scoreNumber, int i)
+{
+  
+  if (wallExist[i] == 0) return;
+ 
+if ( ((*x == wall1.x || *x+1 == wall1.x)  &&  *y >= wall1.y && *y <= wall1.y+wall1.h)  || (*x == wall1.x + wall1.w &&  *y -100 >= wall1.y && *y -100 <= wall1.y+wall1.h)) {
+    if(wallExist[i] !=0) (*scoreNumber)++; 
+
+    wallExist[i] = 0;
+   } 
+
+   if (( *y == wall1.y &&  *x >= wall1.x && *x <= wall1.x+wall1.w)||( *y == wall1.y + wall1.h &&  *x +1 >= wall1.x && *x +1 <= wall1.x+wall1.w)) {
+    if (wallExist[i] != 0) (*scoreNumber)++;
+
+     wallExist[i] = 0;
+   }
+
+ if (*wallExist) SDL_RenderDrawRect(gRenderer, &wall1);
+ 
+}
+
 void pixelDraw(SDL_Rect pixelPos,SDL_Rect brickRect,SDL_Renderer* gRenderer,int *x,int *y,int *polX,int *polY,SDL_Texture* dotTexture)
 {
    if (*polX == 0) *x = *x+1;
@@ -22,7 +43,6 @@ void pixelDraw(SDL_Rect pixelPos,SDL_Rect brickRect,SDL_Renderer* gRenderer,int 
  SDL_RenderCopy(gRenderer,dotTexture,NULL,&pixelPos); 
  //SDL_RenderDrawPoint(gRenderer,*x,*y);
 }
-
 
 void brickDraw(SDL_Rect brickRect,int *polBrick,SDL_Renderer* gRenderer,int *b,SDL_Texture *barTexture)
 {
@@ -78,9 +98,7 @@ barSurface);
 
  SDL_Rect brickRect = {300,220,80,40};
  SDL_Rect pixelPos = {0,0,20,20};
-// SDL_RenderDrawRect(gRenderer,&brickRect);
-// SDL_RenderDrawPoint(gRenderer,x,y);
- //SDL_RenderCopy(gRenderer,dotTexture,NULL,&pixelPos); 
+
  SDL_RenderPresent(gRenderer);
  SDL_Event e; 
  int quit = 0;
@@ -99,24 +117,9 @@ barSurface);
  SDL_SetRenderDrawColor(gRenderer,0,0xFF,0xFF,0xFF);
  brickDraw(brickRect, &polBrick,gRenderer,&(brickRect.x),barTexture);
  pixelDraw(pixelPos,brickRect,gRenderer,&x,&y,&polX,&polY,dotTexture); 
-   if ( ((x == wall1.x || x+1 == wall1.x)  &&  y >= wall1.y && y <= wall1.y+wall1.h)  || (x == wall1.x + wall1.w &&  y -100 >= wall1.y && y -100 <= wall1.y+wall1.h)) {
-    if(wallExist[0] !=0) scoreNumber++; 
+wallDraw( gRenderer, wall1, wallExist, &x, &y, &scoreNumber,0);
 
-    wallExist[0] = 0;
-   } 
-
-   if (( y == wall1.y &&  x >= wall1.x && x <= wall1.x+wall1.w)||( y == wall1.y + wall1.h &&  x +1 >= wall1.x && x +1 <= wall1.x+wall1.w)) {
-    if (wallExist[0] != 0) scoreNumber++;
-
-     wallExist[0] = 0;
-   }
-
- 
-
-
- if (*wallExist) SDL_RenderDrawRect(gRenderer, &wall1);
  scoreDraw(scoreFont,gRenderer,scoreNumber);
- //SDL_RenderCopy(gRenderer,scoreTexture,NULL,&scoreRect);
  SDL_RenderPresent(gRenderer);
  SDL_Delay(5); 
 
