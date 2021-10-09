@@ -25,7 +25,12 @@ if ( ((*x == wall1.x || *x+1 == wall1.x)  &&  *y >= wall1.y && *y <= wall1.y+wal
      wallExist[i] = 0;
    }
 
- if (wallExist[i]) SDL_RenderDrawRect(gRenderer, &wall1);
+ if (wallExist[i]) { 
+   SDL_RenderDrawLine(gRenderer,wall1.x,wall1.y,wall1.x+wall1.w,wall1.y);
+   SDL_RenderDrawLine(gRenderer,wall1.x,wall1.y,wall1.x,wall1.y+wall1.h);
+   SDL_RenderDrawLine(gRenderer,wall1.x+wall1.w,wall1.y,wall1.x+wall1.w,wall1.y+wall1.h);
+   SDL_RenderDrawLine(gRenderer,wall1.x,wall1.y+wall1.h,wall1.x+wall1.w,wall1.y+wall1.h);
+ }
  
 }
 
