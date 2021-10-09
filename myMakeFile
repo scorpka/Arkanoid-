@@ -1,2 +1,2 @@
 all:
-	gcc l6.c -o l6.exe -lSDL2 -lSDL2_image -lSDL2_ttf
+	gcc arkanoidMain.c -o arkanoid -lSDL2 -lSDL2_image -lSDL2_ttf
