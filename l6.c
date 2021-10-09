@@ -191,6 +191,7 @@ int main(void) {
  char* exitText = "exit";
  char* gameOverText ="game over";
  char* playAgainText ="play Again?"; 
+ char* heroBoardText ="HEROES:";
      SDL_Color mainTextColor = {255,255,255};
    //new game 
      SDL_Surface* newGameSurface = TTF_RenderText_Solid(mainFont,newGameText,mainTextColor);
@@ -214,6 +215,10 @@ int main(void) {
      SDL_Surface* playAgainSurface = TTF_RenderText_Solid(mainFont,playAgainText,mainTextColor);
      SDL_Rect playAgainRect = {WIDTH -580,HEIGHT - 300,playAgainSurface->w,playAgainSurface->h}; 
      SDL_Texture* playAgainTexture = SDL_CreateTextureFromSurface(gRenderer,playAgainSurface);
+//HEROBOARD:
+    SDL_Surface* heroBoardSurface = TTF_RenderText_Solid(mainFont,heroBoardText,mainTextColor);
+     SDL_Rect heroBoardRect = {WIDTH -500,HEIGHT - 580,heroBoardSurface->w,heroBoardSurface->h}; 
+     SDL_Texture* heroBoardTexture = SDL_CreateTextureFromSurface(gRenderer,heroBoardSurface);
 
 
  while(!quit)
@@ -269,6 +274,7 @@ int main(void) {
               }
              }else if (e.key.keysym.sym == SDLK_RETURN) {
                  if (mainThemePosition == 0) mainTheme = 0; 
+                 if (mainThemePosition == 1) mainTheme = 3; 
                  if (mainThemePosition == 2) quit  = 1; 
                  continue;
              }
@@ -293,6 +299,7 @@ int main(void) {
             }else if(e.type == SDL_MOUSEBUTTONDOWN) {
                if(WIDTH -580 < mouseMotionX && mouseMotionX  < (WIDTH -580+(newGameSurface->w)) && (HEIGHT - 500) < mouseMotionY &&  mouseMotionY < ((HEIGHT-500)+ newGameSurface->h)  ) mainTheme = 0; 
 
+               if(WIDTH -580 < mouseMotionX && mouseMotionX  < (WIDTH -580+(leaderBoardSurface->w)) && (HEIGHT - 400) < mouseMotionY &&  mouseMotionY < ((HEIGHT-400)+ leaderBoardSurface->h)  ) mainTheme = 3; 
                if(WIDTH -480 < mouseMotionX && mouseMotionX  < (WIDTH -480+(exitSurface->w)) && (HEIGHT - 300) < mouseMotionY &&  mouseMotionY < ((HEIGHT-300)+ exitSurface->h)  ) quit = 1; 
             
             }
@@ -380,10 +387,24 @@ int main(void) {
                 mainTheme = 1;
       }
     }
+}else if(mainTheme == 3) {
+     SDL_SetRenderDrawColor(gRenderer,0,0,0,0);
+     SDL_RenderClear(gRenderer);
+     SDL_RenderCopy(gRenderer,heroBoardTexture,NULL,&heroBoardRect);
+     SDL_RenderPresent(gRenderer);
+    while(SDL_PollEvent(&e) != 0)
+   {
+      if(e.type == SDL_QUIT) {
+           quit = 1;
+      }else if(e.type == SDL_KEYDOWN || e.type == SDL_MOUSEBUTTONDOWN) {
+                mainTheme = 1;
+     }
+   }
+
 }
 } 
- SDL_DestroyWindow(window);
  TTF_Quit();
+ SDL_DestroyWindow(window);
  SDL_Quit();
 
 }
