@@ -145,7 +145,7 @@ int main(void) {
  SDL_Surface* blueSurface = SDL_LoadBMP("blue.bmp");
 
  TTF_Font* scoreFont = TTF_OpenFont("v_DigitalStrip_v1.5.ttf",52);
-
+ TTF_Font* mainFont = TTF_OpenFont("IrinaCTT.ttf",70);
   SDL_SetColorKey(dotSurface,SDL_TRUE,SDL_MapRGB(dotSurface->format,0xFF,0xFF,0xFF));
   SDL_SetColorKey(redSurface,SDL_TRUE,SDL_MapRGB(redSurface->format,0,0xFF,0xFF));
   SDL_SetColorKey(greenSurface,SDL_TRUE,SDL_MapRGB(greenSurface->format,0xFF,0xFF,0xFF));
@@ -177,8 +177,117 @@ int main(void) {
  int quit = 0;
  int mouseMotionY = HEIGHT/2, mouseMotionX = WIDTH/2;
  int mousePositionY =HEIGHT/2, mousePositionX =WIDTH/2;
+ int mainTheme = 1; int mainThemePosition = -1;
+ char* newGameText = "New game";
+ char* leaderBoardText = "leaderBoard";
+ char* exitText = "exit";
+     SDL_Color mainTextColor = {255,255,255};
+   //new game 
+     SDL_Surface* newGameSurface = TTF_RenderText_Solid(mainFont,newGameText,mainTextColor);
+     //TODO correct 580 and 500 to newGameSurface.h
+     SDL_Rect newGameRect = {WIDTH -580,HEIGHT - 500,newGameSurface->w,newGameSurface->h}; 
+     SDL_Texture* newGameTexture = SDL_CreateTextureFromSurface(gRenderer,newGameSurface);
+//leaderboard
+     SDL_Surface* leaderBoardSurface = TTF_RenderText_Solid(mainFont,leaderBoardText,mainTextColor);
+     SDL_Rect leaderBoardRect = {WIDTH -580,HEIGHT - 400,leaderBoardSurface->w,leaderBoardSurface->h}; 
+     SDL_Texture* leaderBoardTexture = SDL_CreateTextureFromSurface(gRenderer,leaderBoardSurface);
+
+//exit
+     SDL_Surface* exitSurface = TTF_RenderText_Solid(mainFont,exitText,mainTextColor);
+     SDL_Rect exitRect = {WIDTH -480,HEIGHT - 300,exitSurface->w,exitSurface->h}; 
+     SDL_Texture* exitTexture = SDL_CreateTextureFromSurface(gRenderer,exitSurface);
+
+
  while(!quit)
  {
+   if (mainTheme) {
+      
+
+           while(SDL_PollEvent(&e) != 0)
+       {
+            if(e.type == SDL_QUIT) {
+                quit = 1;
+            }else if(e.type == SDL_KEYDOWN) {
+             if(e.key.keysym.sym == SDLK_DOWN ) {
+                 if (mainThemePosition <= 1){
+                    mainThemePosition++;
+                 }else {   
+                    mainThemePosition = 0;
+                 }
+              if (mainThemePosition == 0){
+                 SDL_SetTextureColorMod(newGameTexture,0,255,0);
+                 SDL_SetTextureColorMod(exitTexture,255,255,255);
+                 continue;
+              }else if (mainThemePosition == 1){
+                 SDL_SetTextureColorMod(newGameTexture,255,255,255);
+                 SDL_SetTextureColorMod(leaderBoardTexture,0 ,255, 0 );
+                 continue;
+
+            }else if (mainThemePosition == 2){
+                 SDL_SetTextureColorMod(leaderBoardTexture,255,255,255);
+                 SDL_SetTextureColorMod(exitTexture,0,255,0);
+                 continue;
+              }
+
+             }else if (e.key.keysym.sym == SDLK_UP) {
+                 if (mainThemePosition >= 1 ){
+                    mainThemePosition--;
+                 }else {   
+                    mainThemePosition = 2;
+                 }
+                 if (mainThemePosition == 0){
+                   SDL_SetTextureColorMod(newGameTexture,0,255,0);
+                   SDL_SetTextureColorMod(leaderBoardTexture,255,255,255);
+                 continue;
+                 }else if (mainThemePosition == 1){
+                   SDL_SetTextureColorMod(exitTexture,255,255,255);
+                   SDL_SetTextureColorMod(leaderBoardTexture,0 ,255, 0 );
+                 continue;
+
+                 }else if (mainThemePosition == 2){
+                 SDL_SetTextureColorMod(newGameTexture,255,255,255);
+                 SDL_SetTextureColorMod(exitTexture,0,255,0);
+                 continue;
+              }
+             }else if (e.key.keysym.sym == SDLK_RETURN) {
+                 if (mainThemePosition == 0) mainTheme = 0; 
+                 if (mainThemePosition == 2) quit  = 1; 
+                 continue;
+             }
+              
+       }else if(e.type == SDL_MOUSEMOTION) {
+       SDL_GetMouseState(&mouseMotionX,&mouseMotionY);           
+       //changeColorText
+               if(WIDTH -580 < mouseMotionX && mouseMotionX  < (WIDTH -580+(newGameSurface->w)) && (HEIGHT - 500) < mouseMotionY &&  mouseMotionY < ((HEIGHT-500)+ newGameSurface->h)  ) {
+                 SDL_SetTextureColorMod(newGameTexture,0,255,0);
+               }else  SDL_SetTextureColorMod(newGameTexture,255,255,255);
+
+               if(WIDTH -580 < mouseMotionX && mouseMotionX  < (WIDTH -580+(leaderBoardSurface->w)) && (HEIGHT - 400) < mouseMotionY &&  mouseMotionY < ((HEIGHT-400)+ leaderBoardSurface->h)  ) {
+                 SDL_SetTextureColorMod(leaderBoardTexture,0,255,0);
+               }else  SDL_SetTextureColorMod(leaderBoardTexture,255,255,255);
+
+               if(WIDTH -480 < mouseMotionX && mouseMotionX  < (WIDTH -480+(exitSurface->w)) && (HEIGHT - 300) < mouseMotionY &&  mouseMotionY < ((HEIGHT-300)+ exitSurface->h)  ){ 
+                 SDL_SetTextureColorMod(exitTexture,0,255,0);
+               }else  SDL_SetTextureColorMod(exitTexture,255,255,255);
+
+//mouse down
+
+            }else if(e.type == SDL_MOUSEBUTTONDOWN) {
+               if(WIDTH -580 < mouseMotionX && mouseMotionX  < (WIDTH -580+(newGameSurface->w)) && (HEIGHT - 500) < mouseMotionY &&  mouseMotionY < ((HEIGHT-500)+ newGameSurface->h)  ) mainTheme = 0; 
+
+               if(WIDTH -480 < mouseMotionX && mouseMotionX  < (WIDTH -480+(exitSurface->w)) && (HEIGHT - 300) < mouseMotionY &&  mouseMotionY < ((HEIGHT-300)+ exitSurface->h)  ) quit = 1; 
+            
+            }
+     SDL_SetRenderDrawColor(gRenderer,0,0,0,0);
+     SDL_RenderClear(gRenderer); 
+
+     SDL_RenderCopy(gRenderer,newGameTexture,NULL,&newGameRect);
+     SDL_RenderCopy(gRenderer,leaderBoardTexture,NULL,&leaderBoardRect);
+     SDL_RenderCopy(gRenderer,exitTexture,NULL,&exitRect);
+
+     SDL_RenderPresent(gRenderer);
+       }
+   }else {
    while(SDL_PollEvent(&e) != 0)
    {
       if(e.type == SDL_QUIT) {
@@ -210,6 +319,7 @@ int main(void) {
         }
       }
    }
+   
  SDL_SetRenderDrawColor(gRenderer,0,80,10,10);
  SDL_RenderClear(gRenderer); 
  
@@ -229,7 +339,7 @@ int main(void) {
  finalCreate(scoreNumber,gRenderer,finalTexture,quit);
  SDL_RenderPresent(gRenderer);
  SDL_Delay(5); 
-
+   }
 }
  
  SDL_DestroyWindow(window);
