@@ -29,7 +29,7 @@ if ( ((*x == wall1.x || *x+1 == wall1.x)  &&  *y >= wall1.y && *y <= wall1.y+wal
  
 }
 
-void pixelDraw(SDL_Rect pixelPos,SDL_Rect brickRect,SDL_Renderer* gRenderer,int *x,int *y,int *polX,int *polY,SDL_Texture* dotTexture, SDL_Texture* redTexture, SDL_Texture* greenTexture, SDL_Texture* blueTexture)
+void pixelDraw(SDL_Rect pixelPos,SDL_Rect brickRect,SDL_Renderer* gRenderer,int *x,int *y,int *polX,int *polY,SDL_Texture* dotTexture, SDL_Texture* redTexture, SDL_Texture* greenTexture, SDL_Texture* blueTexture,SDL_Rect controlRect)
 {
   SDL_Texture* RGB_Texture = NULL;
    if (*polX == 0) *x = *x+1;
@@ -37,12 +37,18 @@ void pixelDraw(SDL_Rect pixelPos,SDL_Rect brickRect,SDL_Renderer* gRenderer,int 
    if ( *x == WIDTH - 1){ *polX =1; }else if(*x == 1){*polX = 0;};
    if ( *y == HEIGHT - 1){ *polY =1; }else if(*y == 1){*polY = 0;};
    //collision
+   //TODO make function collision;
    if ( ((*x == brickRect.x || *x+1 == brickRect.x)  &&  *y >= brickRect.y && *y <= brickRect.y+brickRect.h)  || ((*x == brickRect.x + brickRect.w ||(*x-1 == brickRect.x + brickRect.w))  &&  *y  >= brickRect.y && *y  <= brickRect.y+brickRect.h)){ *polX = !(*polX); if(*x==brickRect.x  || *x == brickRect.x - 1){*x = *x-5;}else if (*x==brickRect.x+brickRect.w  || *x-1 == brickRect.x+brickRect.w){*x = *x +5;}} 
 
    if (( (*y == brickRect.y || *y-1 == brickRect.y) && *x >= brickRect.x && *x <= brickRect.x+brickRect.w) || ((*y == brickRect.y + brickRect.h || (*y-1 ==brickRect.y + brickRect.h)) && *x >= brickRect.x && *x <= brickRect.x+brickRect.w)){ *polY = !*polY; if(*y==brickRect.y  || *y == brickRect.y - 1){*y = *y-5;}else if(*y==brickRect.y+brickRect.h || *y-1 == brickRect.y+brickRect.h){*y =*y+5;}} 
    
+if ( ((*x == controlRect.x || *x+1 == controlRect.x)  &&  *y >= controlRect.y && *y <= controlRect.y+controlRect.h)  || ((*x == controlRect.x + controlRect.w ||(*x-1 == controlRect.x + controlRect.w))  &&  *y  >= controlRect.y && *y  <= controlRect.y+controlRect.h)){ *polX = !(*polX); if(*x==controlRect.x  || *x == controlRect.x - 1){*x = *x-5;}else if (*x==controlRect.x+controlRect.w  || *x-1 == controlRect.x+controlRect.w){*x = *x +5;}} 
+
+   if (( (*y == controlRect.y || *y-1 == controlRect.y) && *x >= controlRect.x && *x <= controlRect.x+controlRect.w) || ((*y == controlRect.y + controlRect.h || (*y-1 ==controlRect.y + controlRect.h)) && *x >= controlRect.x && *x <= controlRect.x+controlRect.w)){ *polY = !*polY; if(*y==controlRect.y  || *y == controlRect.y - 1){*y = *y-5;}else if(*y==controlRect.y+controlRect.h || *y-1 == controlRect.y+controlRect.h){*y =*y+5;}} 
+
    if (*polX == 1) *x = *x-1;
    if (*polY == 1) *y = *y-1;
+
    //fixed bug: throw behind play zone
  if (*x>WIDTH) *x = WIDTH -3; 
  if (*y>HEIGHT) *y = HEIGHT -3;
@@ -81,15 +87,22 @@ void brickDraw(SDL_Rect brickRect,int *polBrick,SDL_Renderer* gRenderer,int *b,S
    if (*b >= (WIDTH-60))  *polBrick = 1;
    if (*b <= 1)  *polBrick = 0;
 
-
-//  SDL_RenderDrawRect(gRenderer,&brickRect);
   SDL_RenderCopy(gRenderer,barTexture,NULL,&brickRect);
+}
+
+void controlDraw(SDL_Rect controlRect,int *polBrick,SDL_Renderer* gRenderer,int *b,SDL_Texture *barTexture)
+{
+  // if (*polBrick == 0) *b  = *b+1;
+  // if (*polBrick == 1) *b  = *b-1;
+  // if (*b >= (WIDTH-60))  *polBrick = 1;
+  // if (*b <= 1)  *polBrick = 0;
+
+   SDL_RenderCopy(gRenderer,barTexture,NULL,&controlRect);
 }
 
 void scoreDraw(TTF_Font* scoreFont,SDL_Renderer* gRenderer,int scoreNumber)
 {
-
- char* scoreText; scoreText = (char*)malloc(4);
+  char* scoreText; scoreText = (char*)malloc(4);
  
   if (scoreNumber >= 10) {  
     *(scoreText+1) = scoreNumber%10 +'0';
@@ -107,6 +120,7 @@ void scoreDraw(TTF_Font* scoreFont,SDL_Renderer* gRenderer,int scoreNumber)
 
  SDL_RenderCopy(gRenderer,scoreTexture,NULL,&scoreRect);
 }
+
 void finalCreate(int scoreNumber,SDL_Renderer* gRenderer,SDL_Texture* finalTexture,int quit) {
   if (scoreNumber >= 18){
         SDL_RenderCopy(gRenderer,finalTexture,NULL,NULL);
@@ -156,10 +170,13 @@ int main(void) {
 
  SDL_Rect brickRect = {300,220,80,40};
  SDL_Rect pixelPos = {0,0,20,20};
+ SDL_Rect controlRect = {400,520,80,20};
 
  SDL_RenderPresent(gRenderer);
  SDL_Event e; 
  int quit = 0;
+ int mouseMotionY = HEIGHT/2, mouseMotionX = WIDTH/2;
+ int mousePositionY =HEIGHT/2, mousePositionX =WIDTH/2;
  while(!quit)
  {
    while(SDL_PollEvent(&e) != 0)
@@ -175,13 +192,32 @@ int main(void) {
           x = 20; y=20;    
           pixelPos.x=0;pixelPos.y=0;pixelPos.w=20;pixelPos.h=20;
       
-      }}}
+      }else if(e.key.keysym.sym == SDLK_RIGHT) {
+             if(controlRect.x < WIDTH -controlRect.w)  controlRect.x = controlRect.x+40; 
+             }else if(e.key.keysym.sym == SDLK_LEFT) {
+             if (controlRect.x > 0)  controlRect.x = controlRect.x-40; 
+             }
+
+      }else if(e.type == SDL_MOUSEMOTION) {
+       SDL_GetMouseState(&mouseMotionX,&mouseMotionY);
+        if (mouseMotionX > mousePositionX) {
+          if(controlRect.x < WIDTH -controlRect.w)  controlRect.x = controlRect.x+5; 
+                mousePositionX = mouseMotionX;
+        }else if(mouseMotionX < mousePositionX) {
+              if (controlRect.x > 0)  controlRect.x = controlRect.x-5; 
+
+                mousePositionX = mouseMotionX;
+        }
+      }
+   }
  SDL_SetRenderDrawColor(gRenderer,0,80,10,10);
  SDL_RenderClear(gRenderer); 
  
  SDL_SetRenderDrawColor(gRenderer,0,0xFF,0xFF,0xFF);
  brickDraw(brickRect, &polBrick,gRenderer,&(brickRect.x),barTexture);
- pixelDraw(pixelPos,brickRect,gRenderer,&x,&y,&polX,&polY,dotTexture,redTexture,greenTexture,blueTexture); 
+
+ controlDraw(controlRect, &polBrick,gRenderer,&(controlRect.x),barTexture);
+ pixelDraw(pixelPos,brickRect,gRenderer,&x,&y,&polX,&polY,dotTexture,redTexture,greenTexture,blueTexture,controlRect); 
 
  for (int i = 0; i<9;i++) 
  {
