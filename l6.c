@@ -29,8 +29,11 @@ if ( ((*x == wall1.x || *x+1 == wall1.x)  &&  *y >= wall1.y && *y <= wall1.y+wal
  
 }
 
-void pixelDraw(SDL_Rect pixelPos,SDL_Rect brickRect,SDL_Renderer* gRenderer,int *x,int *y,int *polX,int *polY,SDL_Texture* dotTexture, SDL_Texture* redTexture, SDL_Texture* greenTexture, SDL_Texture* blueTexture,SDL_Rect controlRect)
+void pixelDraw(SDL_Rect pixelPos,SDL_Rect brickRect,SDL_Renderer* gRenderer,int *x,int *y,int *polX,int *polY,SDL_Texture* dotTexture, SDL_Texture* redTexture, SDL_Texture* greenTexture, SDL_Texture* blueTexture,SDL_Rect controlRect,int *mainTheme)
 {
+  if (*y == 598) {
+    *mainTheme = 2; return;
+  }
   SDL_Texture* RGB_Texture = NULL;
    if (*polX == 0) *x = *x+1;
    if (*polY == 0) *y = *y+1;
@@ -181,6 +184,8 @@ int main(void) {
  char* newGameText = "New game";
  char* leaderBoardText = "leaderBoard";
  char* exitText = "exit";
+ char* gameOverText ="game over";
+ char* playAgainText ="play Again?"; 
      SDL_Color mainTextColor = {255,255,255};
    //new game 
      SDL_Surface* newGameSurface = TTF_RenderText_Solid(mainFont,newGameText,mainTextColor);
@@ -196,11 +201,19 @@ int main(void) {
      SDL_Surface* exitSurface = TTF_RenderText_Solid(mainFont,exitText,mainTextColor);
      SDL_Rect exitRect = {WIDTH -480,HEIGHT - 300,exitSurface->w,exitSurface->h}; 
      SDL_Texture* exitTexture = SDL_CreateTextureFromSurface(gRenderer,exitSurface);
+//game over
+     SDL_Surface* gameOverSurface = TTF_RenderText_Solid(mainFont,gameOverText,mainTextColor);
+     SDL_Rect gameOverRect = {WIDTH -580,HEIGHT - 500,gameOverSurface->w,gameOverSurface->h}; 
+     SDL_Texture* gameOverTexture = SDL_CreateTextureFromSurface(gRenderer,gameOverSurface);
+// play again
+     SDL_Surface* playAgainSurface = TTF_RenderText_Solid(mainFont,playAgainText,mainTextColor);
+     SDL_Rect playAgainRect = {WIDTH -580,HEIGHT - 300,playAgainSurface->w,playAgainSurface->h}; 
+     SDL_Texture* playAgainTexture = SDL_CreateTextureFromSurface(gRenderer,playAgainSurface);
 
 
  while(!quit)
  {
-   if (mainTheme) {
+   if (mainTheme == 1) {
       
 
            while(SDL_PollEvent(&e) != 0)
@@ -287,7 +300,7 @@ int main(void) {
 
      SDL_RenderPresent(gRenderer);
        }
-   }else {
+   }else if (mainTheme == 0 ) {
    while(SDL_PollEvent(&e) != 0)
    {
       if(e.type == SDL_QUIT) {
@@ -327,7 +340,7 @@ int main(void) {
  brickDraw(brickRect, &polBrick,gRenderer,&(brickRect.x),barTexture);
 
  controlDraw(controlRect, &polBrick,gRenderer,&(controlRect.x),barTexture);
- pixelDraw(pixelPos,brickRect,gRenderer,&x,&y,&polX,&polY,dotTexture,redTexture,greenTexture,blueTexture,controlRect); 
+ pixelDraw(pixelPos,brickRect,gRenderer,&x,&y,&polX,&polY,dotTexture,redTexture,greenTexture,blueTexture,controlRect,&mainTheme); 
 
  for (int i = 0; i<9;i++) 
  {
@@ -339,9 +352,31 @@ int main(void) {
  finalCreate(scoreNumber,gRenderer,finalTexture,quit);
  SDL_RenderPresent(gRenderer);
  SDL_Delay(5); 
-   }
-}
+   }else if(mainTheme == 2) {
  
+          for (int i=0;i<=18;i++){ wallExist[i] = 1;}
+
+          brickRect.x =300;brickRect.y=220;brickRect.w=80;brickRect.h=40;
+          scoreNumber = 0;
+          x = 20; y=20;    
+          pixelPos.x=0;pixelPos.y=0;pixelPos.w=20;pixelPos.h=20;
+      
+
+     SDL_SetRenderDrawColor(gRenderer,0,0,0,0);
+     SDL_RenderClear(gRenderer);
+     SDL_RenderCopy(gRenderer,gameOverTexture,NULL,&gameOverRect);
+     SDL_RenderCopy(gRenderer,playAgainTexture,NULL,&playAgainRect);
+     SDL_RenderPresent(gRenderer);
+    while(SDL_PollEvent(&e) != 0)
+   {
+      if(e.type == SDL_QUIT) {
+           quit = 1;
+      }else if(e.type == SDL_KEYDOWN || e.type == SDL_MOUSEBUTTONDOWN) {
+                mainTheme = 1;
+      }
+    }
+}
+} 
  SDL_DestroyWindow(window);
  TTF_Quit();
  SDL_Quit();
