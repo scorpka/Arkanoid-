@@ -58,9 +58,9 @@ int checker = 0;
 
   SDL_Rect textRect = { 200,100,100,20};
   SDL_Surface* textSurface = NULL;
-//  SDL_Rect textPosition = {5,450,100,20};
+
   SDL_Texture* textTexture = SDL_CreateTextureFromSurface(gRenderer,textSurface);
-//SDL_RenderCopy(gRenderer,textTexture,NULL,&textRect); 
+
 for(int i = 0;i<8;i++) {
 zapis3 = zapis3 - 13;
 textSurface = TTF_RenderText_Solid(textFont,zapis3,textColor);
@@ -68,9 +68,11 @@ textTexture = SDL_CreateTextureFromSurface(gRenderer,textSurface);
 textRect.w = textSurface->w; textRect.h=textSurface->h;
 textRect.y = textRect.y + 50;
 SDL_RenderCopy(gRenderer,textTexture,NULL,&textRect); 
-
-SDL_Delay(1);
+SDL_FreeSurface(textSurface);
+SDL_DestroyTexture(textTexture);
+SDL_Delay(100);
 }
+
 }
 
 void wallDraw(SDL_Renderer* gRenderer,int *wallExist, int *x, int *y,int *scoreNumber, int i,int j)
@@ -234,6 +236,13 @@ int main(void) {
  SDL_Texture* greenTexture = SDL_CreateTextureFromSurface(gRenderer, greenSurface);
  SDL_Texture* blueTexture = SDL_CreateTextureFromSurface(gRenderer,blueSurface);
  SDL_Texture* finalTexture = SDL_CreateTextureFromSurface(gRenderer,finalSurface);
+
+SDL_FreeSurface(blueSurface);
+SDL_FreeSurface(greenSurface);
+SDL_FreeSurface(redSurface);
+SDL_FreeSurface(dotSurface);
+SDL_FreeSurface(finalSurface);
+SDL_FreeSurface(barSurface);
 
  SDL_SetRenderDrawColor(gRenderer,0,0,0,0xFF);
  SDL_RenderClear(gRenderer); 
