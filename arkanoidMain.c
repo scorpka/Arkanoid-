@@ -1,12 +1,23 @@
+/* 
+ *
+ *
+*/
+
 #include<SDL2/SDL.h>
 #include<SDL2/SDL_ttf.h>
 #include<SDL2/SDL_image.h>
+
+#define LVL1 0
+#define MAINMENU 1
+#define GAMEOVER 2
+#define HEROBOARDTAB 3
+#define WRITELEADER 4
+
 #define WIDTH 800
 #define HEIGHT 600
 
 void writeLeaderBoardName(char *text2,SDL_RWops* fileWrite, char* fakenameLeader, int scoreHero ) {
  char *newLeaderBoard =(char*)malloc(105);
-// char *fakenameLeader = "lukan     " ;
  int counter = 1, hiddenChecker = 0, solo = 0;
   while (counter <=105) 
   {
@@ -36,14 +47,16 @@ void writeLeaderBoardName(char *text2,SDL_RWops* fileWrite, char* fakenameLeader
   }
   counter--;
   newLeaderBoard -=counter;
- SDL_RWwrite( fileWrite,newLeaderBoard , 1, counter-1);   
+
+  SDL_RWwrite( fileWrite,newLeaderBoard , 1, counter-1);   
 }
 
-void heroBoardTextShow(SDL_Renderer* gRenderer,char *text2,TTF_Font* textFont) {
-char *zapis3 = (char*)malloc(105);
-int checker = 0;
- for (int i = 0;i<104;i++)
-   {
+void heroBoardTextShow(SDL_Renderer* gRenderer,char *text2,TTF_Font* textFont) 
+{
+  char *zapis3 = (char*)malloc(105);
+  int checker = 0;
+  for (int i = 0;i<104;i++)
+  {
      *zapis3 = *text2;
     if (*text2 == '\n') {
     *zapis3 = '\0';
@@ -52,7 +65,7 @@ int checker = 0;
     
      checker++;
       
-   }   
+  }   
     
   SDL_Color textColor = {255,0,0};
 
@@ -61,37 +74,35 @@ int checker = 0;
 
   SDL_Texture* textTexture = SDL_CreateTextureFromSurface(gRenderer,textSurface);
 
-for(int i = 0;i<8;i++) {
-zapis3 = zapis3 - 13;
-textSurface = TTF_RenderText_Solid(textFont,zapis3,textColor);
-textTexture = SDL_CreateTextureFromSurface(gRenderer,textSurface);
-textRect.w = textSurface->w; textRect.h=textSurface->h;
-textRect.y = textRect.y + 50;
-SDL_RenderCopy(gRenderer,textTexture,NULL,&textRect); 
-SDL_FreeSurface(textSurface);
-SDL_DestroyTexture(textTexture);
-SDL_Delay(100);
-}
+  for(int i = 0;i<8;i++) 
+  {
+    zapis3 = zapis3 - 13;
+    textSurface = TTF_RenderText_Solid(textFont,zapis3,textColor);
+    textTexture = SDL_CreateTextureFromSurface(gRenderer,textSurface);
+    textRect.w = textSurface->w; textRect.h=textSurface->h;
+    textRect.y = textRect.y + 50;
+    SDL_RenderCopy(gRenderer,textTexture,NULL,&textRect); 
+    SDL_FreeSurface(textSurface);
+    SDL_DestroyTexture(textTexture);
+    SDL_Delay(100);
+  }
 
 }
 
 void wallDraw(SDL_Renderer* gRenderer,int *wallExist, int *x, int *y,int *scoreNumber, int i,int j)
 {
  //TODO two basis massive 
- // if (wallExist[i] == 0) return;
  
- SDL_Rect wall1 = {700-(i*80),100-(j*30),64,22};
+  SDL_Rect wall1 = {700-(i*80),100-(j*30),64,22};
+
   if (j == 1) i = i+9;
-
-if ( ((*x == wall1.x || *x+1 == wall1.x)  &&  *y >= wall1.y && *y <= wall1.y+wall1.h)  || (*x == wall1.x + wall1.w &&  *y  >= wall1.y && *y  <= wall1.y+wall1.h)) {
-
-    if(wallExist[i] !=0) (*scoreNumber)++; 
+  if ( ((*x == wall1.x || *x+1 == wall1.x)  &&  *y >= wall1.y && *y <= wall1.y+wall1.h)  || (*x == wall1.x + wall1.w &&  *y  >= wall1.y && *y  <= wall1.y+wall1.h)) {
+  if(wallExist[i] !=0) (*scoreNumber)++; 
 
     wallExist[i] = 0;
    } 
-
-   if (( *y == wall1.y &&  *x >= wall1.x && *x <= wall1.x+wall1.w)||( *y == wall1.y + wall1.h &&  *x +1 >= wall1.x && *x +1 <= wall1.x+wall1.w)) {
-    if (wallExist[i] != 0) (*scoreNumber)++;
+  if (( *y == wall1.y &&  *x >= wall1.x && *x <= wall1.x+wall1.w)||( *y == wall1.y + wall1.h &&  *x +1 >= wall1.x && *x +1 <= wall1.x+wall1.w)) {
+  if (wallExist[i] != 0) (*scoreNumber)++;
 
      wallExist[i] = 0;
    }
@@ -128,7 +139,7 @@ if ( ((*x == controlRect.x || *x+1 == controlRect.x)  &&  *y >= controlRect.y &&
    if (*polX == 1) *x = *x-1;
    if (*polY == 1) *y = *y-1;
 
-   //fixed bug: throw behind play zone
+   //have fixed bug: throw behind play zone
  if (*x>WIDTH) *x = WIDTH -3; 
  if (*y>HEIGHT) *y = HEIGHT -3;
 
@@ -136,6 +147,7 @@ if ( ((*x == controlRect.x || *x+1 == controlRect.x)  &&  *y >= controlRect.y &&
   pixelPos.y = *y;
    
  SDL_RenderCopy(gRenderer,dotTexture,NULL,&pixelPos); 
+
   //added colored way after pixel
  if (*polX == 1) pixelPos.x = *x + 5+(rand()%25);;
  if (*polY == 1) pixelPos.y = *y + 5+(rand()%25);;
@@ -152,10 +164,8 @@ if ( ((*x == controlRect.x || *x+1 == controlRect.x)  &&  *y >= controlRect.y &&
     case 2: RGB_Texture = blueTexture;
             break;
   }
-  
- // SDL_SetTextureAlphaMod(redTexture,iRand);
 
-SDL_RenderCopy(gRenderer,RGB_Texture,NULL,&pixelPos); 
+  SDL_RenderCopy(gRenderer,RGB_Texture,NULL,&pixelPos); 
 
 }
 
@@ -166,17 +176,12 @@ void brickDraw(SDL_Rect brickRect,int *polBrick,SDL_Renderer* gRenderer,int *b,S
    if (*b >= (WIDTH-60))  *polBrick = 1;
    if (*b <= 1)  *polBrick = 0;
 
-  SDL_RenderCopy(gRenderer,barTexture,NULL,&brickRect);
+   SDL_RenderCopy(gRenderer,barTexture,NULL,&brickRect);
 }
 
 void controlDraw(SDL_Rect controlRect,int *polBrick,SDL_Renderer* gRenderer,int *b,SDL_Texture *barTexture)
 {
-  // if (*polBrick == 0) *b  = *b+1;
-  // if (*polBrick == 1) *b  = *b-1;
-  // if (*b >= (WIDTH-60))  *polBrick = 1;
-  // if (*b <= 1)  *polBrick = 0;
-
-   SDL_RenderCopy(gRenderer,barTexture,NULL,&controlRect);
+  SDL_RenderCopy(gRenderer,barTexture,NULL,&controlRect);
 }
 
 void scoreDraw(TTF_Font* scoreFont,SDL_Renderer* gRenderer,int scoreNumber)
@@ -187,11 +192,11 @@ void scoreDraw(TTF_Font* scoreFont,SDL_Renderer* gRenderer,int scoreNumber)
     *(scoreText+1) = scoreNumber%10 +'0';
     *(scoreText) = (scoreNumber/10)%10+'0';
     *(scoreText+2) = '\0';
-  }else{
+  }else {
   *scoreText = scoreNumber +'0';
   *(scoreText+1) = '\0';
   }
- SDL_Color textColor = {255,255,255};
+  SDL_Color textColor = {255,255,255};
   
  SDL_Surface* scoreSurface = TTF_RenderText_Solid(scoreFont,scoreText,textColor);
  SDL_Rect scoreRect = {WIDTH -60,5,scoreSurface->w,scoreSurface->h}; 
@@ -216,19 +221,20 @@ int main(void) {
  SDL_Window* window = SDL_CreateWindow("moving",SDL_WINDOWPOS_UNDEFINED,SDL_WINDOWPOS_UNDEFINED,WIDTH,HEIGHT,SDL_WINDOW_SHOWN); 
  SDL_Renderer *gRenderer = SDL_CreateRenderer(window,-1,SDL_RENDERER_ACCELERATED);
 
- SDL_Surface* barSurface = IMG_Load("sprite1.PNG");
- SDL_Surface* finalSurface = IMG_Load("youwin.jpg");
- SDL_Surface* dotSurface = SDL_LoadBMP("dot.bmp");
- SDL_Surface* redSurface = SDL_LoadBMP("red.bmp");
- SDL_Surface* greenSurface = SDL_LoadBMP("green1.bmp");
- SDL_Surface* blueSurface = SDL_LoadBMP("blue.bmp");
+ SDL_Surface* barSurface = IMG_Load("image/sprite1.PNG");
+ SDL_Surface* finalSurface = IMG_Load("image/youwin.jpg");
+ SDL_Surface* dotSurface = SDL_LoadBMP("image/dot.bmp");
+ SDL_Surface* redSurface = SDL_LoadBMP("image/red.bmp");
+ SDL_Surface* greenSurface = SDL_LoadBMP("image/green1.bmp");
+ SDL_Surface* blueSurface = SDL_LoadBMP("image/blue.bmp");
 
- TTF_Font* scoreFont = TTF_OpenFont("v_DigitalStrip_v1.5.ttf",52);
- TTF_Font* mainFont = TTF_OpenFont("IrinaCTT.ttf",70);
-  SDL_SetColorKey(dotSurface,SDL_TRUE,SDL_MapRGB(dotSurface->format,0xFF,0xFF,0xFF));
-  SDL_SetColorKey(redSurface,SDL_TRUE,SDL_MapRGB(redSurface->format,0,0xFF,0xFF));
-  SDL_SetColorKey(greenSurface,SDL_TRUE,SDL_MapRGB(greenSurface->format,0xFF,0xFF,0xFF));
-  SDL_SetColorKey(blueSurface,SDL_TRUE,SDL_MapRGB(blueSurface->format,0,0xFF,0xFF));
+ TTF_Font* scoreFont = TTF_OpenFont("fonts/v_DigitalStrip_v1.5.ttf",52);
+ TTF_Font* mainFont = TTF_OpenFont("fonts/IrinaCTT.ttf",70);
+
+ SDL_SetColorKey(dotSurface,SDL_TRUE,SDL_MapRGB(dotSurface->format,0,0xFF,0xFF));
+ SDL_SetColorKey(redSurface,SDL_TRUE,SDL_MapRGB(redSurface->format,0,0xFF,0xFF));
+ SDL_SetColorKey(greenSurface,SDL_TRUE,SDL_MapRGB(greenSurface->format,0xFF,0xFF,0xFF));
+ SDL_SetColorKey(blueSurface,SDL_TRUE,SDL_MapRGB(blueSurface->format,0,0xFF,0xFF));
 
  SDL_Texture* dotTexture = SDL_CreateTextureFromSurface(gRenderer,dotSurface);
  SDL_Texture* barTexture = SDL_CreateTextureFromSurface(gRenderer,barSurface);
@@ -237,12 +243,12 @@ int main(void) {
  SDL_Texture* blueTexture = SDL_CreateTextureFromSurface(gRenderer,blueSurface);
  SDL_Texture* finalTexture = SDL_CreateTextureFromSurface(gRenderer,finalSurface);
 
-SDL_FreeSurface(blueSurface);
-SDL_FreeSurface(greenSurface);
-SDL_FreeSurface(redSurface);
-SDL_FreeSurface(dotSurface);
-SDL_FreeSurface(finalSurface);
-SDL_FreeSurface(barSurface);
+ SDL_FreeSurface(blueSurface);
+ SDL_FreeSurface(greenSurface);
+ SDL_FreeSurface(redSurface);
+ SDL_FreeSurface(dotSurface);
+ SDL_FreeSurface(finalSurface);
+ SDL_FreeSurface(barSurface);
 
  SDL_SetRenderDrawColor(gRenderer,0,0,0,0xFF);
  SDL_RenderClear(gRenderer); 
@@ -273,47 +279,52 @@ SDL_FreeSurface(barSurface);
  char* text2 = (char*)malloc(105); 
  
   SDL_Color mainTextColor = {255,255,255};
- //ReadScoreBoard
-  SDL_RWops* fileWrite = SDL_RWFromFile("nums2.bin","w");
-  SDL_RWops* fileRead = SDL_RWFromFile("nums.bin","r+b"); 
+
+  //ReadScoreBoard
+  SDL_RWops* fileWrite = SDL_RWFromFile("data/nums2.bin","w");
+  SDL_RWops* fileRead = SDL_RWFromFile("data/nums.bin","r+b"); 
   SDL_RWread(fileRead,text2,1,104); 
-   //new game 
-     SDL_Surface* newGameSurface = TTF_RenderText_Solid(mainFont,newGameText,mainTextColor);
-     //TODO correct 580 and 500 to newGameSurface.h
-     SDL_Rect newGameRect = {WIDTH -580,HEIGHT - 500,newGameSurface->w,newGameSurface->h}; 
-     SDL_Texture* newGameTexture = SDL_CreateTextureFromSurface(gRenderer,newGameSurface);
-//leaderboard
-     SDL_Surface* leaderBoardSurface = TTF_RenderText_Solid(mainFont,leaderBoardText,mainTextColor);
-     SDL_Rect leaderBoardRect = {WIDTH -580,HEIGHT - 400,leaderBoardSurface->w,leaderBoardSurface->h}; 
-     SDL_Texture* leaderBoardTexture = SDL_CreateTextureFromSurface(gRenderer,leaderBoardSurface);
 
-//exit
-     SDL_Surface* exitSurface = TTF_RenderText_Solid(mainFont,exitText,mainTextColor);
-     SDL_Rect exitRect = {WIDTH -480,HEIGHT - 300,exitSurface->w,exitSurface->h}; 
-     SDL_Texture* exitTexture = SDL_CreateTextureFromSurface(gRenderer,exitSurface);
-//game over
-     SDL_Surface* gameOverSurface = TTF_RenderText_Solid(mainFont,gameOverText,mainTextColor);
-     SDL_Rect gameOverRect = {WIDTH -580,HEIGHT - 500,gameOverSurface->w,gameOverSurface->h}; 
-     SDL_Texture* gameOverTexture = SDL_CreateTextureFromSurface(gRenderer,gameOverSurface);
-    char* yourName =(char*)malloc(10);
-    int lengthName = 0;
-// play again
-     SDL_Surface* playAgainSurface = TTF_RenderText_Solid(mainFont,playAgainText,mainTextColor);
-     SDL_Rect playAgainRect = {WIDTH -580,HEIGHT - 300,playAgainSurface->w,playAgainSurface->h}; 
-     SDL_Texture* playAgainTexture = SDL_CreateTextureFromSurface(gRenderer,playAgainSurface);
-//HEROBOARD:
-    SDL_Surface* heroBoardSurface = TTF_RenderText_Solid(mainFont,heroBoardText,mainTextColor);
-     SDL_Rect heroBoardRect = {WIDTH -500,HEIGHT - 580,heroBoardSurface->w,heroBoardSurface->h}; 
-     SDL_Texture* heroBoardTexture = SDL_CreateTextureFromSurface(gRenderer,heroBoardSurface);
+  //new game 
+  SDL_Surface* newGameSurface = TTF_RenderText_Solid(mainFont,newGameText,mainTextColor);
+  //TODO correct 580 and 500 to newGameSurface.h
+  SDL_Rect newGameRect = {WIDTH -580,HEIGHT - 500,newGameSurface->w,newGameSurface->h}; 
+  SDL_Texture* newGameTexture = SDL_CreateTextureFromSurface(gRenderer,newGameSurface);
+
+  //leaderboard
+  SDL_Surface* leaderBoardSurface = TTF_RenderText_Solid(mainFont,leaderBoardText,mainTextColor);
+  SDL_Rect leaderBoardRect = {WIDTH -580,HEIGHT - 400,leaderBoardSurface->w,leaderBoardSurface->h}; 
+  SDL_Texture* leaderBoardTexture = SDL_CreateTextureFromSurface(gRenderer,leaderBoardSurface);
+
+  //exit
+  SDL_Surface* exitSurface = TTF_RenderText_Solid(mainFont,exitText,mainTextColor);
+  SDL_Rect exitRect = {WIDTH -480,HEIGHT - 300,exitSurface->w,exitSurface->h}; 
+  SDL_Texture* exitTexture = SDL_CreateTextureFromSurface(gRenderer,exitSurface);
+
+  //game over
+  SDL_Surface* gameOverSurface = TTF_RenderText_Solid(mainFont,gameOverText,mainTextColor);
+  SDL_Rect gameOverRect = {WIDTH -580,HEIGHT - 500,gameOverSurface->w,gameOverSurface->h}; 
+  SDL_Texture* gameOverTexture = SDL_CreateTextureFromSurface(gRenderer,gameOverSurface);
+  char* yourName =(char*)malloc(10);
+  int lengthName = 0;
+
+  // play again
+  SDL_Surface* playAgainSurface = TTF_RenderText_Solid(mainFont,playAgainText,mainTextColor);
+  SDL_Rect playAgainRect = {WIDTH -580,HEIGHT - 300,playAgainSurface->w,playAgainSurface->h}; 
+  SDL_Texture* playAgainTexture = SDL_CreateTextureFromSurface(gRenderer,playAgainSurface);
+
+  //HEROBOARD:
+  SDL_Surface* heroBoardSurface = TTF_RenderText_Solid(mainFont,heroBoardText,mainTextColor);
+  SDL_Rect heroBoardRect = {WIDTH -500,HEIGHT - 580,heroBoardSurface->w,heroBoardSurface->h}; 
+  SDL_Texture* heroBoardTexture = SDL_CreateTextureFromSurface(gRenderer,heroBoardSurface);
 
 
- while(!quit)
- {
-   if (mainTheme == 1) {
+  while(!quit)
+  {
+    if (mainTheme == MAINMENU ) {
       
-
-           while(SDL_PollEvent(&e) != 0)
-       {
+        while(SDL_PollEvent(&e) != 0)
+        {
             if(e.type == SDL_QUIT) {
                 quit = 1;
             }else if(e.type == SDL_KEYDOWN) {
@@ -366,6 +377,7 @@ SDL_FreeSurface(barSurface);
              }
               
        }else if(e.type == SDL_MOUSEMOTION) {
+
        SDL_GetMouseState(&mouseMotionX,&mouseMotionY);           
        //changeColorText
                if(WIDTH -580 < mouseMotionX && mouseMotionX  < (WIDTH -580+(newGameSurface->w)) && (HEIGHT - 500) < mouseMotionY &&  mouseMotionY < ((HEIGHT-500)+ newGameSurface->h)  ) {
@@ -398,7 +410,7 @@ SDL_FreeSurface(barSurface);
 
      SDL_RenderPresent(gRenderer);
        }
-   }else if (mainTheme == 0 ) {
+   }else if (mainTheme == LVL1 ) {
    while(SDL_PollEvent(&e) != 0)
    {
       if(e.type == SDL_QUIT) {
@@ -444,36 +456,38 @@ SDL_FreeSurface(barSurface);
  {
    for (int j = 0;j<2;j++)
  wallDraw( gRenderer,wallExist, &x, &y, &scoreNumber,i,j);
+
  }
 
  scoreDraw(scoreFont,gRenderer,scoreNumber);
  finalCreate(scoreNumber,gRenderer,finalTexture,quit);
  SDL_RenderPresent(gRenderer);
  SDL_Delay(5); 
-   }else if(mainTheme == 2) {
- 
-          for (int i=0;i<=18;i++){ wallExist[i] = 1;}
 
-          brickRect.x =300;brickRect.y=220;brickRect.w=80;brickRect.h=40;
-          scoreNumber = 0;
-          x = 20; y=20;    
-          pixelPos.x=0;pixelPos.y=0;pixelPos.w=20;pixelPos.h=20;
+ }else if(mainTheme == GAMEOVER) {
+ 
+    for (int i=0;i<=18;i++){ wallExist[i] = 1;}
+
+    brickRect.x =300;brickRect.y=220;brickRect.w=80;brickRect.h=40;
+    scoreNumber = 0;
+    x = 20; y=20;    
+    pixelPos.x=0;pixelPos.y=0;pixelPos.w=20;pixelPos.h=20;
       
 
-     SDL_SetRenderDrawColor(gRenderer,0,0,0,0);
-     SDL_RenderClear(gRenderer);
-     SDL_RenderCopy(gRenderer,gameOverTexture,NULL,&gameOverRect);
-     SDL_RenderCopy(gRenderer,playAgainTexture,NULL,&playAgainRect);
-     SDL_RenderPresent(gRenderer);
-    while(SDL_PollEvent(&e) != 0)
-   {
+  SDL_SetRenderDrawColor(gRenderer,0,0,0,0);
+  SDL_RenderClear(gRenderer);
+  SDL_RenderCopy(gRenderer,gameOverTexture,NULL,&gameOverRect);
+  SDL_RenderCopy(gRenderer,playAgainTexture,NULL,&playAgainRect);
+  SDL_RenderPresent(gRenderer);
+  while(SDL_PollEvent(&e) != 0)
+  {
       if(e.type == SDL_QUIT) {
            quit = 1;
       }else if(e.type == SDL_KEYDOWN || e.type == SDL_MOUSEBUTTONDOWN) {
                 mainTheme = 1;
       }
     }
- }else if(mainTheme == 3) {
+  }else if( mainTheme == HEROBOARDTAB ) {
      SDL_SetRenderDrawColor(gRenderer,0,0,0,0);
      SDL_RenderClear(gRenderer);
      SDL_RenderCopy(gRenderer,heroBoardTexture,NULL,&heroBoardRect);
@@ -488,15 +502,17 @@ SDL_FreeSurface(barSurface);
                 mainTheme = 1;
      }
    }
-//writeYourName
- }else if(mainTheme == 4) {
-      SDL_SetRenderDrawColor(gRenderer,0,0,0,0);
+ //writeYourName
+ }else if( mainTheme == WRITELEADER ) {
+
+     SDL_SetRenderDrawColor(gRenderer,0,0,0,0);
      SDL_RenderClear(gRenderer);
      SDL_RenderCopy(gRenderer,heroBoardTexture,NULL,&heroBoardRect);
 
      heroBoardTextShow(gRenderer,text2,scoreFont);
      SDL_RenderPresent(gRenderer);
      SDL_StartTextInput();
+
     while(SDL_PollEvent(&e) != 0)
    {
       if(e.type == SDL_QUIT) {
