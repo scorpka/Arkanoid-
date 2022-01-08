@@ -205,12 +205,18 @@ void scoreDraw(TTF_Font* scoreFont,SDL_Renderer* gRenderer,int scoreNumber)
  SDL_RenderCopy(gRenderer,scoreTexture,NULL,&scoreRect);
 }
 
-void finalCreate(int scoreNumber,SDL_Renderer* gRenderer,SDL_Texture* finalTexture,int quit, int *finalNumber) {
-  if (scoreNumber >= 18){
-        SDL_RenderCopy(gRenderer,finalTexture,NULL,NULL);
-        SDL_RenderPresent(gRenderer);
-        quit = 1;
-  }
+void finalCreate(int scoreNumber,SDL_Renderer* gRenderer,SDL_Texture* finalTexture,int quit, int *finalNumber, SDL_Rect brickRect,int *wallExist, int  *x, int *y,SDL_Rect pixelPos) {
+         for (int i=0;i<=18;i++){ wallExist[i] = 1;}
+
+          brickRect.x =300;brickRect.y=220;brickRect.w=80;brickRect.h=40;
+ //         scoreNumber++;
+          *x = 30; *y=30;    
+          pixelPos.x=0;pixelPos.y=0;pixelPos.w=20;pixelPos.h=20;
+
+//        SDL_RenderCopy(gRenderer,finalTexture,NULL,NULL);
+//        SDL_RenderPresent(gRenderer);
+//        quit = 1;
+//  }
 
 
 }
@@ -446,10 +452,15 @@ int main(void) {
       }
    }
    
+  if (scoreNumber % 18 == 0 && scoreNumber != 0 ){
+ finalCreate(scoreNumber,gRenderer,finalTexture,quit,&scoreNumber,brickRect, wallExist,&x,&y,pixelPos);
+ scoreNumber++;
+  }
  SDL_SetRenderDrawColor(gRenderer,0,80,10,10);
  SDL_RenderClear(gRenderer); 
  
  SDL_SetRenderDrawColor(gRenderer,0,0xFF,0xFF,0xFF);
+
  brickDraw(brickRect, &polBrick,gRenderer,&(brickRect.x),barTexture);
 
  controlDraw(controlRect, &polBrick,gRenderer,&(controlRect.x),barTexture);
@@ -463,7 +474,6 @@ int main(void) {
  }
 
  scoreDraw(scoreFont,gRenderer,scoreNumber);
- finalCreate(scoreNumber,gRenderer,finalTexture,quit,&scoreNumber);
  SDL_RenderPresent(gRenderer);
  SDL_Delay(4); 
 
