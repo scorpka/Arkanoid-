@@ -205,7 +205,7 @@ void scoreDraw(TTF_Font* scoreFont,SDL_Renderer* gRenderer,int scoreNumber)
  SDL_RenderCopy(gRenderer,scoreTexture,NULL,&scoreRect);
 }
 
-void finalCreate(int scoreNumber,SDL_Renderer* gRenderer,SDL_Texture* finalTexture,int quit) {
+void finalCreate(int scoreNumber,SDL_Renderer* gRenderer,SDL_Texture* finalTexture,int quit, int *finalNumber) {
   if (scoreNumber >= 18){
         SDL_RenderCopy(gRenderer,finalTexture,NULL,NULL);
         SDL_RenderPresent(gRenderer);
@@ -254,7 +254,10 @@ int main(void) {
  SDL_RenderClear(gRenderer); 
  
  SDL_SetRenderDrawColor(gRenderer,0,0xFF,0xFF,0xFF);
+ //this is score
  int scoreNumber = 0;
+ int finalNumber = 0;
+ //this is first position
  int x = 20,y=20;
  int polX = 0;int polY=0;
  int polBrick = 0;
@@ -460,9 +463,9 @@ int main(void) {
  }
 
  scoreDraw(scoreFont,gRenderer,scoreNumber);
- finalCreate(scoreNumber,gRenderer,finalTexture,quit);
+ finalCreate(scoreNumber,gRenderer,finalTexture,quit,&scoreNumber);
  SDL_RenderPresent(gRenderer);
- SDL_Delay(5); 
+ SDL_Delay(4); 
 
  }else if(mainTheme == GAMEOVER) {
  

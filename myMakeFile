@@ -1,2 +1,3 @@
 all:
-	gcc arkanoidMain.c -o arkanoid -lSDL2 -lSDL2_image -lSDL2_ttf
+	gcc source/arkanoidMain.c -o arkanoid  -lSDL2 -lSDL2_image -lSDL2_ttf 
+
