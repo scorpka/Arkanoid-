@@ -16,6 +16,14 @@
 #define WIDTH 800
 #define HEIGHT 600
 
+struct ball {
+    int posX;
+    int posY;
+    int dirMoveX;
+    int dirMoveY;
+    int speed;
+};
+
 void writeLeaderBoardName(char *text2,SDL_RWops* fileWrite, char* fakenameLeader, int scoreHero ) {
  char *newLeaderBoard =(char*)malloc(105);
  int counter = 1, hiddenChecker = 0, solo = 0;
@@ -115,44 +123,47 @@ void wallDraw(SDL_Renderer* gRenderer,int *wallExist, int *x, int *y,int *scoreN
  }
  
 }
-
-void pixelDraw(SDL_Rect pixelPos,SDL_Rect brickRect,SDL_Renderer* gRenderer,int *x,int *y,int *polX,int *polY,SDL_Texture* dotTexture, SDL_Texture* redTexture, SDL_Texture* greenTexture, SDL_Texture* blueTexture,SDL_Rect controlRect,int *mainTheme)
+void collision(struct ball *someBall, SDL_Rect brickRect,SDL_Rect controlRect) 
 {
-  if (*y == 598) {
+     if ( (((*someBall).posX == brickRect.x || (*someBall).posX+1 == brickRect.x)  &&  (*someBall).posY >= brickRect.y && (*someBall).posY <= brickRect.y+brickRect.h)  || (((*someBall).posX == brickRect.x + brickRect.w ||((*someBall).posX-1 == brickRect.x + brickRect.w))  &&  (*someBall).posY  >= brickRect.y && (*someBall).posY  <= brickRect.y+brickRect.h)){ (*someBall).dirMoveX = -1* ((*someBall).dirMoveX) ; if((*someBall).posX==brickRect.x  || (*someBall).posX == brickRect.x - 1){(*someBall).posX = (*someBall).posX-5;}else if ((*someBall).posX==brickRect.x+brickRect.w  || (*someBall).posX-1 == brickRect.x+brickRect.w){(*someBall).posX = (*someBall).posX +5;}}
+
+   if (( ((*someBall).posY == brickRect.y || (*someBall).posY-1 == brickRect.y) && (*someBall).posX >= brickRect.x && (*someBall).posX <= brickRect.x+brickRect.w) || (((*someBall).posY == brickRect.y + brickRect.h || ((*someBall).posY-1 ==brickRect.y + brickRect.h)) && (*someBall).posX >= brickRect.x && (*someBall).posX <= brickRect.x+brickRect.w)){ (*someBall).dirMoveY = -1* (*someBall).dirMoveY; if((*someBall).posY==brickRect.y  || (*someBall).posY == brickRect.y - 1){(*someBall).posY = (*someBall).posY-5;}else if((*someBall).posY==brickRect.y+brickRect.h || (*someBall).posY-1 == brickRect.y+brickRect.h){(*someBall).posY =(*someBall).posY+5;}}
+
+if ( (((*someBall).posX == controlRect.x || (*someBall).posX+1 == controlRect.x)  &&  (*someBall).posY >= controlRect.y && (*someBall).posY <= controlRect.y+controlRect.h)  || (((*someBall).posX == controlRect.x + controlRect.w ||((*someBall).posX-1 == controlRect.x + controlRect.w))  &&  (*someBall).posY  >= controlRect.y && (*someBall).posY  <= controlRect.y+controlRect.h)){ (*someBall).dirMoveX = -1* (*someBall).dirMoveX; if((*someBall).posX==controlRect.x  || (*someBall).posX == controlRect.x - 1){(*someBall).posX = (*someBall).posX-5;}else if ((*someBall).posX==controlRect.x+controlRect.w  || (*someBall).posX-1 == controlRect.x+controlRect.w){(*someBall).posX = (*someBall).posX +5;}}
+
+   if (( ((*someBall).posY == controlRect.y || (*someBall).posY-1 == controlRect.y) && (*someBall).posX >= controlRect.x && (*someBall).posX <= controlRect.x+controlRect.w) || (((*someBall).posY == controlRect.y + controlRect.h || ((*someBall).posY-1 ==controlRect.y + controlRect.h)) && (*someBall).posX >= controlRect.x && (*someBall).posX <= controlRect.x+controlRect.w)){ (*someBall).dirMoveY = -1* (*someBall).dirMoveY; if((*someBall).posY==controlRect.y  || (*someBall).posY == controlRect.y - 1){(*someBall).posY = (*someBall).posY-5;}else if((*someBall).posY==controlRect.y+controlRect.h || (*someBall).posY-1 == controlRect.y+controlRect.h){(*someBall).posY =(*someBall).posY+5;}}
+
+
+}
+//drawBall and calculate collision
+//
+
+void pixelDraw(SDL_Rect pixelPos,SDL_Rect brickRect,SDL_Renderer* gRenderer,struct ball *someBall, SDL_Texture* dotTexture, SDL_Texture* redTexture, SDL_Texture* greenTexture, SDL_Texture* blueTexture,SDL_Rect controlRect,int *mainTheme)
+{
+  if ((*someBall).posY == 598) {
     *mainTheme = 2; return;
   }
   SDL_Texture* RGB_Texture = NULL;
-   if (*polX == 0) *x = *x+1;
-   if (*polY == 0) *y = *y+1;
-   if ( *x == WIDTH - 1){ *polX =1; }else if(*x == 1){*polX = 0;};
-   if ( *y == HEIGHT - 1){ *polY =1; }else if(*y == 1){*polY = 0;};
-   //collision
-   //TODO make function collision;
-   if ( ((*x == brickRect.x || *x+1 == brickRect.x)  &&  *y >= brickRect.y && *y <= brickRect.y+brickRect.h)  || ((*x == brickRect.x + brickRect.w ||(*x-1 == brickRect.x + brickRect.w))  &&  *y  >= brickRect.y && *y  <= brickRect.y+brickRect.h)){ *polX = !(*polX); if(*x==brickRect.x  || *x == brickRect.x - 1){*x = *x-5;}else if (*x==brickRect.x+brickRect.w  || *x-1 == brickRect.x+brickRect.w){*x = *x +5;}} 
+   (*someBall).posX = (*someBall).posX+(*someBall).dirMoveX;
+   (*someBall).posY = (*someBall).posY+(*someBall).dirMoveY;
+   if ( (*someBall).posX == WIDTH - 1){ (*someBall).dirMoveX =-1; }else if((*someBall).posX == 1){(*someBall).dirMoveX = 1;};
+   if ( (*someBall).posY == HEIGHT - 1){ (*someBall).dirMoveY =-1; }else if((*someBall).posY == 1){(*someBall).dirMoveY = 1;};
 
-   if (( (*y == brickRect.y || *y-1 == brickRect.y) && *x >= brickRect.x && *x <= brickRect.x+brickRect.w) || ((*y == brickRect.y + brickRect.h || (*y-1 ==brickRect.y + brickRect.h)) && *x >= brickRect.x && *x <= brickRect.x+brickRect.w)){ *polY = !*polY; if(*y==brickRect.y  || *y == brickRect.y - 1){*y = *y-5;}else if(*y==brickRect.y+brickRect.h || *y-1 == brickRect.y+brickRect.h){*y =*y+5;}} 
-   
-if ( ((*x == controlRect.x || *x+1 == controlRect.x)  &&  *y >= controlRect.y && *y <= controlRect.y+controlRect.h)  || ((*x == controlRect.x + controlRect.w ||(*x-1 == controlRect.x + controlRect.w))  &&  *y  >= controlRect.y && *y  <= controlRect.y+controlRect.h)){ *polX = !(*polX); if(*x==controlRect.x  || *x == controlRect.x - 1){*x = *x-5;}else if (*x==controlRect.x+controlRect.w  || *x-1 == controlRect.x+controlRect.w){*x = *x +5;}} 
+  collision( someBall, brickRect, controlRect);
 
-   if (( (*y == controlRect.y || *y-1 == controlRect.y) && *x >= controlRect.x && *x <= controlRect.x+controlRect.w) || ((*y == controlRect.y + controlRect.h || (*y-1 ==controlRect.y + controlRect.h)) && *x >= controlRect.x && *x <= controlRect.x+controlRect.w)){ *polY = !*polY; if(*y==controlRect.y  || *y == controlRect.y - 1){*y = *y-5;}else if(*y==controlRect.y+controlRect.h || *y-1 == controlRect.y+controlRect.h){*y =*y+5;}} 
+ if ((*someBall).posX>WIDTH) (*someBall).posX = WIDTH -3; 
+ if ((*someBall).posY>HEIGHT) (*someBall).posY = HEIGHT -3;
 
-   if (*polX == 1) *x = *x-1;
-   if (*polY == 1) *y = *y-1;
-
-   //have fixed bug: throw behind play zone
- if (*x>WIDTH) *x = WIDTH -3; 
- if (*y>HEIGHT) *y = HEIGHT -3;
-
-  pixelPos.x = *x;
-  pixelPos.y = *y;
+  pixelPos.x = (*someBall).posX;
+  pixelPos.y = (*someBall).posY;
    
  SDL_RenderCopy(gRenderer,dotTexture,NULL,&pixelPos); 
 
   //added colored way after pixel
- if (*polX == 1) pixelPos.x = *x + 5+(rand()%25);;
- if (*polY == 1) pixelPos.y = *y + 5+(rand()%25);;
- if (*polX == 0) pixelPos.x = *x + 5-(rand()%25);;
- if (*polY == 0) pixelPos.y = *y + 5-(rand()%25);;
+ if ((*someBall).dirMoveX == -1) pixelPos.x = (*someBall).posX + 5+(rand()%25);;
+ if ((*someBall).dirMoveY == -1) pixelPos.y = (*someBall).posY + 5+(rand()%25);;
+ if ((*someBall).dirMoveX == 1) pixelPos.x = (*someBall).posX + 5-(rand()%25);;
+ if ((*someBall).dirMoveY == 1) pixelPos.y = (*someBall).posY + 5-(rand()%25);;
   pixelPos.h = pixelPos.h/3+1;
   pixelPos.w = pixelPos.w/3+1;
   switch( rand() %3)
@@ -221,6 +232,9 @@ void finalCreate(int scoreNumber,SDL_Renderer* gRenderer,SDL_Texture* finalTextu
 
 }
 
+
+
+
 int main(void) {
  SDL_Init(SDL_INIT_VIDEO);
  TTF_Init();
@@ -264,10 +278,11 @@ int main(void) {
  int scoreNumber = 0;
  int finalNumber = 0;
  //this is first position
- int x = 20,y=20;
- int polX = 0;int polY=0;
  int polBrick = 0;
  int wallExist[]= {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,};
+struct ball firstBall;
+firstBall.dirMoveX=1; firstBall.dirMoveY=1;
+firstBall.posX = 20, firstBall.posY =20;
 
  SDL_Rect brickRect = {300,220,80,40};
  SDL_Rect pixelPos = {0,0,20,20};
@@ -430,7 +445,7 @@ int main(void) {
 
           brickRect.x =300;brickRect.y=220;brickRect.w=80;brickRect.h=40;
           scoreNumber = 0;
-          x = 20; y=20;    
+          firstBall.posX  = 20; firstBall.posY =20;    
           pixelPos.x=0;pixelPos.y=0;pixelPos.w=20;pixelPos.h=20;
       
       }else if(e.key.keysym.sym == SDLK_RIGHT) {
@@ -453,7 +468,7 @@ int main(void) {
    }
    
   if (scoreNumber % 18 == 0 && scoreNumber != 0 ){
- finalCreate(scoreNumber,gRenderer,finalTexture,quit,&scoreNumber,brickRect, wallExist,&x,&y,pixelPos);
+ finalCreate(scoreNumber,gRenderer,finalTexture,quit,&scoreNumber,brickRect, wallExist,&firstBall.posX ,&firstBall.posY ,pixelPos);
  scoreNumber++;
   }
  SDL_SetRenderDrawColor(gRenderer,0,80,10,10);
@@ -464,12 +479,12 @@ int main(void) {
  brickDraw(brickRect, &polBrick,gRenderer,&(brickRect.x),barTexture);
 
  controlDraw(controlRect, &polBrick,gRenderer,&(controlRect.x),barTexture);
- pixelDraw(pixelPos,brickRect,gRenderer,&x,&y,&polX,&polY,dotTexture,redTexture,greenTexture,blueTexture,controlRect,&mainTheme); 
+ pixelDraw(pixelPos,brickRect,gRenderer,&firstBall,dotTexture,redTexture,greenTexture,blueTexture,controlRect,&mainTheme); 
 
  for (int i = 0; i<9;i++) 
  {
    for (int j = 0;j<2;j++)
- wallDraw( gRenderer,wallExist, &x, &y, &scoreNumber,i,j);
+ wallDraw( gRenderer,wallExist, &firstBall.posX , &firstBall.posY , &scoreNumber,i,j);
 
  }
 
@@ -483,7 +498,7 @@ int main(void) {
 
     brickRect.x =300;brickRect.y=220;brickRect.w=80;brickRect.h=40;
     scoreNumber = 0;
-    x = 20; y=20;    
+    firstBall.posX  = 20; firstBall.posY =20;    
     pixelPos.x=0;pixelPos.y=0;pixelPos.w=20;pixelPos.h=20;
       
 
