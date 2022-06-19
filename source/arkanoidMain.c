@@ -121,8 +121,9 @@ void wallDraw(SDL_Renderer* gRenderer,int *wallExist, int *x, int *y,int *scoreN
    SDL_RenderDrawLine(gRenderer,wall1.x+wall1.w,wall1.y,wall1.x+wall1.w,wall1.y+wall1.h);
    SDL_RenderDrawLine(gRenderer,wall1.x,wall1.y+wall1.h,wall1.x+wall1.w,wall1.y+wall1.h);
  }
- 
 }
+
+//check hit ball with square and redirect move
 void collision(struct ball *someBall, SDL_Rect brickRect,SDL_Rect controlRect) 
 {
      if ( (((*someBall).posX == brickRect.x || (*someBall).posX+1 == brickRect.x)  &&  (*someBall).posY >= brickRect.y && (*someBall).posY <= brickRect.y+brickRect.h)  || (((*someBall).posX == brickRect.x + brickRect.w ||((*someBall).posX-1 == brickRect.x + brickRect.w))  &&  (*someBall).posY  >= brickRect.y && (*someBall).posY  <= brickRect.y+brickRect.h)){ (*someBall).dirMoveX = -1* ((*someBall).dirMoveX) ; if((*someBall).posX==brickRect.x  || (*someBall).posX == brickRect.x - 1){(*someBall).posX = (*someBall).posX-5;}else if ((*someBall).posX==brickRect.x+brickRect.w  || (*someBall).posX-1 == brickRect.x+brickRect.w){(*someBall).posX = (*someBall).posX +5;}}
